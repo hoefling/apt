@@ -1,0 +1,10 @@
+# Editor junk
+.DS_Store
+.idea
+.vscode
+
+# Temp files
+*.tmp
+
+Packages
+Packages.gz

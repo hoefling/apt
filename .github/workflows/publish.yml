@@ -1,0 +1,55 @@
+name: Publish APT repository
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dpkg tools
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev
+
+      - name: Build Packages metadata
+        run: |
+          echo "Generating Packages for arm64..."
+          dpkg-scanpackages pool/main override /dev/null \
+            | grep -A9999 '^Package:' \
+            | awk '/Architecture: arm64/{p=1} p{print} /^$/{p=0}' \
+            > "dists/stable/main/binary-arm64/Packages"
+          gzip -kf "dists/stable/main/binary-arm64/Packages"
+
+          echo "Generating Packages for amd64..."
+          dpkg-scanpackages pool/main override /dev/null \
+            | grep -A9999 '^Package:' \
+            | awk '/Architecture: amd64/{p=1} p{print} /^$/{p=0}' \
+            > "dists/stable/main/binary-amd64/Packages"
+          gzip -kf "dists/stable/main/binary-amd64/Packages"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
