@@ -26,12 +26,13 @@ jobs:
           repository: "${{ inputs.repo }}"
           tag: "${{ inputs.tag }}"
           fileName: '*.deb'
+          out-file-path: 'pool/main'
 
       - name: Commit deb files
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          git add pool
+          git add pool/main
           git commit -m "Import ${{ inputs.repo }}@${{ inputs.tag }}"
           git push origin main
