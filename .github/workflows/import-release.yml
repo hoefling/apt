@@ -16,26 +16,9 @@ permissions:
 jobs:
   import:
     runs-on: ubuntu-24.04
-    container:
-      image: debian:13.3
-
     steps:
       - name: Checkout APT repo
         uses: actions/checkout@v4
-
-      - name: Install tools
-        run: apt update && apt install -y dpkg-dev curl
-        env:
-          DEBIAN_FRONTEND: 'noninteractive'
-
-      #- name: Download deb files from release
-      #  run: |
-      #    gh release download "${{ inputs.tag }}" \
-      #      --repo "${{ inputs.repo }}" \
-      #      --pattern "*.deb" \
-      #      --dir pool/main
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download deb files from release
         uses: robinraju/release-downloader@v1
@@ -43,3 +26,12 @@ jobs:
           repository: "${{ inputs.repo }}"
           tag: "${{ inputs.tag }}"
           fileName: '*.deb'
+
+      - name: Commit deb files
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add pool
+          git commit -m "Import ${{ inputs.repo }}@${{ inputs.tag }}"
+          git push origin main
