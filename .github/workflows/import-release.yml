@@ -1,0 +1,45 @@
+name: Import release into APT repo
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: "Upstream repository (owner/name)"
+        required: true
+      tag:
+        description: "Release tag (e.g. v1.2.0)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-24.04
+    container:
+      image: debian:13.3
+
+    steps:
+      - name: Checkout APT repo
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: apt update && apt install -y dpkg-dev curl
+        env:
+          DEBIAN_FRONTEND: 'noninteractive'
+
+      #- name: Download deb files from release
+      #  run: |
+      #    gh release download "${{ inputs.tag }}" \
+      #      --repo "${{ inputs.repo }}" \
+      #      --pattern "*.deb" \
+      #      --dir pool/main
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download deb files from release
+        uses: robinraju/release-downloader@v1
+        with:
+          repository: "${{ inputs.repo }}"
+          tag: "${{ inputs.tag }}"
+          fileName: '*.deb'
