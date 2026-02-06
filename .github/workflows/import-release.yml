@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout APT repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.APT_REPO_TOKEN }}
 
       - name: Download deb files from release
         uses: robinraju/release-downloader@v1
@@ -30,9 +32,8 @@ jobs:
 
       - name: Commit deb files
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-
+          git config user.name "apt-release-bot"
+          git config user.email "apt-release-bot@users.noreply.github.com"
           git add pool/main
           git diff --cached --quiet || ( \
             git commit -m "Import ${{ inputs.repo }}@${{ inputs.tag }}" \
