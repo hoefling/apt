@@ -39,6 +39,7 @@ jobs:
           gzip -kf "dists/stable/main/binary-amd64/Packages"
 
           apt-ftparchive -c release.conf release dists/stable > dists/stable/Release
+          gpg --batch --yes --clearsign -o dists/stable/InRelease dists/stable/Release
 
       - name: Upload Pages artifact
         id: deployment
