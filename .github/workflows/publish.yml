@@ -19,23 +19,25 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dpkg tools
-        run: sudo apt-get update && sudo apt-get install -y dpkg-dev
+        run: sudo apt update && sudo apt install -y apt-utils dpkg-dev
 
       - name: Build Packages metadata
         run: |
           echo "Generating Packages for arm64..."
-          dpkg-scanpackages pool/main override /dev/null \
+          dpkg-scanpackages --multiversion pool/main override /dev/null \
             | grep -A9999 '^Package:' \
             | awk '/Architecture: arm64/{p=1} p{print} /^$/{p=0}' \
             > "dists/stable/main/binary-arm64/Packages"
           gzip -kf "dists/stable/main/binary-arm64/Packages"
 
           echo "Generating Packages for amd64..."
-          dpkg-scanpackages pool/main override /dev/null \
+          dpkg-scanpackages --multiversion pool/main override /dev/null \
             | grep -A9999 '^Package:' \
             | awk '/Architecture: amd64/{p=1} p{print} /^$/{p=0}' \
             > "dists/stable/main/binary-amd64/Packages"
           gzip -kf "dists/stable/main/binary-amd64/Packages"
+
+          apt-ftparchive release dists/stable > dists/stable/Release
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
