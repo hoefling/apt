@@ -24,16 +24,12 @@ jobs:
       - name: Build Packages metadata
         run: |
           echo "Generating Packages for arm64..."
-          dpkg-scanpackages --multiversion pool/main override /dev/null \
-            | grep -A9999 '^Package:' \
-            | awk '/Architecture: arm64/{p=1} p{print} /^$/{p=0}' \
+          dpkg-scanpackages --multiversion -a arm64 pool/main override \
             > "dists/stable/main/binary-arm64/Packages"
           gzip -kf "dists/stable/main/binary-arm64/Packages"
 
           echo "Generating Packages for amd64..."
-          dpkg-scanpackages --multiversion pool/main override /dev/null \
-            | grep -A9999 '^Package:' \
-            | awk '/Architecture: amd64/{p=1} p{print} /^$/{p=0}' \
+          dpkg-scanpackages --multiversion -a amd64 pool/main override \
             > "dists/stable/main/binary-amd64/Packages"
           gzip -kf "dists/stable/main/binary-amd64/Packages"
 
