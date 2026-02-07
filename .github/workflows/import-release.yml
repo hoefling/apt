@@ -6,8 +6,8 @@ on:
       repo:
         description: "Upstream repository (hoefling/python3-magic-filter)"
         required: true
-      tag:
-        description: "Release tag (e.g. v1.0.12)"
+      version:
+        description: "Release version tag (e.g. 1.0.12)"
         required: true
 
 permissions:
@@ -26,7 +26,7 @@ jobs:
         uses: robinraju/release-downloader@v1
         with:
           repository: "${{ inputs.repo }}"
-          tag: "${{ inputs.tag }}"
+          tag: "${{ inputs.version }}"
           fileName: '*.deb'
           out-file-path: 'pool/main'
 
@@ -36,6 +36,6 @@ jobs:
           git config user.email "apt-release-bot@users.noreply.github.com"
           git add pool/main
           git diff --cached --quiet || ( \
-            git commit -m "Import ${{ inputs.repo }}@${{ inputs.tag }}" \
+            git commit -m "Import ${{ inputs.repo }}@${{ inputs.version }}" \
             && git push origin main \
           )
