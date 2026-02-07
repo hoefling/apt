@@ -18,6 +18,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Import GPG key
+        run: |
+          echo "${{ secrets.APT_REPO_GPG_PRIVATE_KEY }}" | gpg --batch --import
+          gpg --list-keys
+
       - name: Install dpkg tools
         run: sudo apt update && sudo apt install -y apt-utils dpkg-dev
 
