@@ -73,11 +73,11 @@ jobs:
 
     - name: Add APT repository
       run: |
-        echo "deb [trusted=yes] https://hoefling.io/apt stable main" \
+        echo "deb [trusted=yes] https://apt.hoefling.io stable main" \
           > /etc/apt/sources.list.d/personal.list
 
     - name: Update APT
       run: apt update
 
     - name: Install package
-      run: apt install -y python3-magic-filter
+      run: apt install -y python3-aiogram apt-transport-r2
