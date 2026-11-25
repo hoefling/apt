@@ -29,6 +29,7 @@ jobs:
           tag: "${{ inputs.version }}"
           fileName: '*.deb'
           out-file-path: 'pool/main'
+          token: ${{ secrets.APT_REPO_TOKEN }}
 
       - name: Commit deb files
         run: |
